@@ -5,7 +5,30 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  commitlint:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Install dependencies
+      run: yarn --frozen-lockfile
+
+    - name: Run commitlint
+      uses: wagoid/commitlint-github-action@v1
+      with:
+        configFile: '.commitlintrc.json'
+
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,6 +44,20 @@ jobs:
 
     - name: Run lint
       run: yarn lint
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Install dependencies
+      run: yarn --frozen-lockfile
 
     - name: Run tests
       run: yarn test
